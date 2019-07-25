@@ -1,0 +1,49 @@
+version: '3.2'
+services:
+  web:
+    image: quay.io/netguru/baseimage:0.10.2
+    deploy:
+      placement:
+        constraints: [node.hostname == worker] #for debugging
+      resources:
+        limits:
+          cpus: '0.25'
+          memory: 800M
+    volumes:
+      - staging-assets:/app/public/assets
+      - /var/log/app:/app/log
+    networks:
+      - swarm-net
+    command: sleep 3m
+  sidekiq:
+    image: quay.io/netguru/baseimage:0.10.2
+    deploy:
+      placement:
+        constraints: [node.hostname == worker] #for debugging
+      resources:
+        limits:
+          cpus: '0.25'
+          memory: 800M
+    networks:
+      - swarm-net
+      - internal-net
+    command: sleep 5m 
+  crono:
+    image: quay.io/netguru/baseimage:0.10.2
+    deploy:
+      placement:
+        constraints: [node.hostname == worker] #for debugging
+      resources:
+        limits:
+          cpus: '0.25'
+          memory: 800M
+    networks:
+      - internal-net
+    command: sleep 4m
+volumes:
+  staging-assets:
+networks:
+  swarm-net:
+    driver: overlay
+  internal-net:
+    internal: true
